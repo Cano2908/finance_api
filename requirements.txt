@@ -1,0 +1,7 @@
+dask>=2025.4.1
+fastapi>=0.110.2
+inflect>=7.2.1
+pandas>=2.2.2
+pydantic>=2.7.1
+pymongo>=4.7.0
+uvicorn>=0.34.2

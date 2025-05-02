@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environment variables
+.env
+.env.*
+
+# Virtual environment
+venv/
+.venv/
+.env/
+
+# FastAPI specific
+*.log
+*.db
+*.sqlite3
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+htmlcov/
+.coverage
+*.cover
+*.py,cover
+
+# Pytest
+.cache/
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

@@ -1,0 +1,27 @@
+from fastapi import HTTPException
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.responses import JSONResponse
+
+from apps.api.app import app
+from apps.api.config.exceptions.exception_handlers import (
+    exception_handler,
+    problem_handler,
+)
+from apps.api.config.exceptions.json_encoder import json_base_model_encoder
+from apps.api.config.problems.problem_exception import Problem
+from apps.api.routers.empresa_router import company_router
+from apps.api.routers.health_check_router import health_check_router
+from apps.tools.env import env
+
+DEV_MODE = env.DEV_MODE
+
+
+JSONResponse.media_type = "application/json; charset=utf-8"
+JSONResponse.render = json_base_model_encoder
+
+app.include_router(health_check_router, tags=["Health Check"])
+app.include_router(company_router, tags=["Company"])
+
+app.exception_handler(Exception)(exception_handler)
+app.exception_handler(HTTPException)(http_exception_handler)
+app.exception_handler(Problem)(problem_handler)
