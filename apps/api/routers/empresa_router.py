@@ -23,20 +23,20 @@ from apps.tools.env import env
 from apps.tools.objectid import ObjectId
 from apps.tools.paginator import PaginationMetadata
 
-company_manager = EmpresaManager()
+empresa_manager = EmpresaManager()
 
-company_router = APIRouter(
+empresa_router = APIRouter(
     prefix=posixpath.join(env.API_PREFIX, "empresa"),
 )
 
 
-@company_router.get(
+@empresa_router.get(
     "/",
     status_code=HTTPStatus.OK,
     response_model=ResponseModel[list[Empresa], PaginationMetadata],
     operation_id="GetAllCompanies",
 )
-async def get_all_companies(
+async def get_all_empresas(
     filters: Annotated[
         Dict,
         Depends(
@@ -50,32 +50,32 @@ async def get_all_companies(
     Returns a list of all companies in the database.
     """
 
-    company_dao = EmpresaDAO()
-    companies: list[Empresa] = await company_dao.get_all(**filters)
+    empresa_dao = EmpresaDAO()
+    empresas: list[Empresa] = await empresa_dao.get_all(**filters)
 
-    companies, pagination_metadata = paginator(companies)
+    empresas, pagination_metadata = paginator(empresas)
     return ResponseModel(
         status=True,
-        detail="Companies retrieved successfully",
-        data=companies,
+        detail="Company retrieved successfully",
+        data=empresas,
         metadata=pagination_metadata,
     )
 
 
-@company_router.get(
+@empresa_router.get(
     "/{id_empresa}",
     status_code=HTTPStatus.OK,
     response_model=ResponseModel[Empresa, None],
     operation_id="GetCompanyById",
 )
-async def get_company_by_id(id_empresa: ObjectId):
+async def get_empresa_by_id(id_empresa: ObjectId):
     """
     Get company by id.
     Returns a company with the given id.
     """
 
     try:
-        company: Empresa = await company_manager.get_company_by_id(
+        empresa: Empresa = await empresa_manager.get_empresa_by_id(
             id_empresa=id_empresa
         )
     except BaseCompanyException as e:
@@ -84,38 +84,38 @@ async def get_company_by_id(id_empresa: ObjectId):
     return ResponseModel(
         status=True,
         detail="Company retrieved successfully",
-        data=company,
+        data=empresa,
     )
 
 
-@company_router.post(
+@empresa_router.post(
     "/",
     status_code=HTTPStatus.CREATED,
     response_model=ResponseModel[Empresa, None],
     operation_id="CreateCompany",
 )
-async def create_company(company: Empresa) -> ResponseModel[Empresa, None]:
+async def create_empresa(company: Empresa) -> ResponseModel[Empresa, None]:
     """
     Create a new company.
     Returns the created company.
     """
 
-    created_company: Empresa = await company_manager.create_company(company=company)
+    created_empresa: Empresa = await empresa_manager.create_empresa(company=company)
 
     return ResponseModel(
         status=True,
         detail="Company created successfully",
-        data=created_company,
+        data=created_empresa,
     )
 
 
-@company_router.put(
+@empresa_router.put(
     "/{id_empresa}",
     status_code=HTTPStatus.OK,
     response_model=ResponseModel[Empresa, None],
     operation_id="UpdateCompany",
 )
-async def update_company(
+async def update_empresa(
     id_empresa: ObjectId,
     company: Empresa,
 ) -> ResponseModel[Empresa, None]:
@@ -125,7 +125,7 @@ async def update_company(
     """
 
     try:
-        updated_company: Empresa = await company_manager.update_company(
+        updated_empresa: Empresa = await empresa_manager.update_empresa(
             id_empresa=id_empresa,
             company=company,
         )
@@ -137,24 +137,24 @@ async def update_company(
     return ResponseModel(
         status=True,
         detail="Company updated successfully",
-        data=updated_company,
+        data=updated_empresa,
     )
 
 
-@company_router.delete(
+@empresa_router.delete(
     "/{id_empresa}",
     status_code=HTTPStatus.OK,
     response_model=ResponseModel[None, None],
     operation_id="DeleteCompany",
 )
-async def delete_company(id_empresa: ObjectId) -> ResponseModel[None, None]:
+async def delete_empresa(id_empresa: ObjectId) -> ResponseModel[None, None]:
     """
     Delete a company by id.
     Returns a message indicating the company was deleted successfully.
     """
 
     try:
-        await company_manager.delete_company(id_empresa=id_empresa)
+        await empresa_manager.delete_empresa(id_empresa=id_empresa)
     except BaseCompanyException as e:
         raise Problem[CompanyProblem](detail=str(e))
     except BaseMongoDAOException as e:

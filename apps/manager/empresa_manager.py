@@ -9,59 +9,59 @@ class EmpresaManager:
     def __init__(self) -> None:
         self._empresa_dao = EmpresaDAO()
 
-    async def get_company_by_id(self, id_empresa: ObjectId) -> Empresa:
-        company: Empresa | None = await self._empresa_dao.get_by_id(item_id=id_empresa)
+    async def get_empresa_by_id(self, id_empresa: ObjectId) -> Empresa:
+        empresa: Empresa | None = await self._empresa_dao.get_by_id(item_id=id_empresa)
 
-        if company is None:
+        if empresa is None:
             raise NoCompanyAvailableException(
                 f"No hay proyecto disponible con el id: {id_empresa}"
             )
 
-        return company
+        return empresa
 
-    async def create_company(self, company: Empresa) -> Empresa:
+    async def create_empresa(self, company: Empresa) -> Empresa:
         return await self._empresa_dao.create(data=company)
 
-    async def update_company(self, id_empresa: ObjectId, company: Empresa) -> Empresa:
-        find_company: Empresa | None = await self._empresa_dao.get_by_id(
+    async def update_empresa(self, id_empresa: ObjectId, company: Empresa) -> Empresa:
+        find_empresa: Empresa | None = await self._empresa_dao.get_by_id(
             item_id=id_empresa
         )
 
-        if find_company is None:
+        if find_empresa is None:
             raise NoCompanyAvailableException(
                 f"No hay Empresa disponible con el id: {id_empresa}"
             )
 
-        updated_company: Empresa | None = await self._empresa_dao.update_by_id(
+        updated_empresa: Empresa | None = await self._empresa_dao.update_by_id(
             item_id=id_empresa,
             data=company,
         )
 
-        if updated_company is None:
+        if updated_empresa is None:
             raise MongoUpdateException(
                 f"No se ha podido actualizar la empresa con el id: {id_empresa}"
             )
 
-        return updated_company
+        return updated_empresa
 
-    async def delete_company(self, id_empresa: ObjectId) -> None:
-        find_company: Empresa | None = await self._empresa_dao.get_by_id(
+    async def delete_empresa(self, id_empresa: ObjectId) -> None:
+        find_empresa: Empresa | None = await self._empresa_dao.get_by_id(
             item_id=id_empresa
         )
 
-        if find_company is None:
+        if find_empresa is None:
             raise NoCompanyAvailableException(
                 f"No hay Empresa disponible con el id: {id_empresa}"
             )
 
-        find_company.status = StatusCompany.INACTIVO
+        find_empresa.status = StatusCompany.INACTIVO
 
-        updated_company: Empresa | None = await self._empresa_dao.update_by_id(
+        updated_empresa: Empresa | None = await self._empresa_dao.update_by_id(
             item_id=id_empresa,
-            data=find_company,
+            data=find_empresa,
         )
 
-        if updated_company is None:
+        if updated_empresa is None:
             raise MongoUpdateException(
                 f"No se ha podido eliminar la empresa con el id: {id_empresa}"
             )

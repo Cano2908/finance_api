@@ -1,4 +1,3 @@
-import os
 import posixpath
 from contextlib import asynccontextmanager
 
@@ -8,7 +7,7 @@ from apps.tools.env import env
 
 API_PREFIX = env.API_PREFIX
 APP_NAME = env.APP_NAME
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 
 @asynccontextmanager
