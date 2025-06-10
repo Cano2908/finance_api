@@ -1,4 +1,5 @@
 import inspect
+import typing
 
 # pylint: disable=unused-import  # reason: needed for Enum validation
 from enum import Enum

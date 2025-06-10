@@ -45,7 +45,10 @@ async def get_all_periodos_contables(
     filters: Annotated[
         Dict,
         Depends(
-            get_model_filters(PeriodoContable, exclude=["id", "id_empresa"]),
+            get_model_filters(
+                PeriodoContable,
+                exclude=["id", "id_empresa", "estado_resultado", "balance_general"],
+            ),
         ),
     ],
     paginator: Annotated[
@@ -73,6 +76,42 @@ async def get_all_periodos_contables(
         detail="Periodos contables retrieved successfully",
         data=periodos_contables,
         metadata=pagination_metadata,
+    )
+
+
+@periodo_contable_router.get(
+    path="/{id_empresa}/periodo_contable/{id_periodo_contable}",
+    status_code=HTTPStatus.OK,
+    response_model=ResponseModel[PeriodoContable, None],
+    operation_id="GetPeriodoContableById",
+)
+async def get_periodo_contable_by_id(
+    id_periodo_contable: ObjectId,
+    id_empresa: Annotated[
+        ObjectId,
+        Depends(
+            ValidateCompanyMiddleware(),
+        ),
+    ],
+) -> ResponseModel[PeriodoContable, None]:
+    """
+    Get a periodo contable by its ID.
+    Returns the periodo contable with the specified ID.
+    """
+
+    try:
+        periodo_contable: PeriodoContable = (
+            await periodo_contable_manager.get_periodo_contable_by_id(
+                id_periodo_contable=id_periodo_contable
+            )
+        )
+    except BasePeriodoContableException as e:
+        raise Problem[PeriodoContableProblem](detail=str(e))
+
+    return ResponseModel(
+        status=True,
+        detail="Periodo contable retrieved successfully",
+        data=periodo_contable,
     )
 
 

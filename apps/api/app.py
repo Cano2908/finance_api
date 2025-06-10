@@ -7,7 +7,7 @@ from apps.tools.env import env
 
 API_PREFIX = env.API_PREFIX
 APP_NAME = env.APP_NAME
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 
 
 @asynccontextmanager

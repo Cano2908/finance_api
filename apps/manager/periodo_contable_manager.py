@@ -11,6 +11,20 @@ class PeriodoContableManager:
     def __init__(self) -> None:
         self._periodo_contable_dao = PeriodoContableDAO()
 
+    async def get_periodo_contable_by_id(
+        self, id_periodo_contable: ObjectId
+    ) -> PeriodoContable:
+        periodo_contable: PeriodoContable | None = (
+            await self._periodo_contable_dao.get_by_id(item_id=id_periodo_contable)
+        )
+
+        if periodo_contable is None:
+            raise NoPeriodoContableAvailableException(
+                f"No hay periodo contable disponible con el id: {id_periodo_contable}"
+            )
+
+        return periodo_contable
+
     async def create_periodo_contable(
         self, id_empresa: ObjectId, periodo_contable: PeriodoContable
     ) -> PeriodoContable:
@@ -26,7 +40,7 @@ class PeriodoContableManager:
 
         if find_periodo_contable is not None:
             raise NoPeriodoContableAvailableException(
-                f"Ya existe un periodo contable con las fechas ingresadas: {find_periodo_contable.nombre} "
+                f"Ya existe un periodo contable con las fechas ingresadas: {find_periodo_contable.anio} "
             )
 
         return await self._periodo_contable_dao.create(data=periodo_contable)
