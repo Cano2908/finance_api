@@ -1,4 +1,5 @@
 from enum import Enum
+from re import S
 from typing import Annotated
 
 from pydantic import Field
@@ -13,8 +14,6 @@ class StatusCompany(Enum):
 
 @mongo_model(collection_name="empresa", schema_version=1)
 class Empresa(BaseMongoModel):
-    nombre: Annotated[str, Field(alias="nombre")]
-    rfc: Annotated[str, Field(alias="rfc")]
-    status: Annotated[
-        StatusCompany, Field(alias="status", default=StatusCompany.ACTIVO)
-    ]
+    nombre: str
+    rfc: str
+    status: StatusCompany = StatusCompany.ACTIVO
