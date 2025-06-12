@@ -60,7 +60,7 @@ class EstadoResultadosManager:
         periodo_contable.estado_resultado = estado_resultados
 
         updated_periodo_contable: PeriodoContable | None = (
-            await self._periodo_contable_dao.update(
+            await self._periodo_contable_dao.update_by_id(
                 item_id=id_periodo,
                 data=periodo_contable,
             )
@@ -99,7 +99,7 @@ class EstadoResultadosManager:
         periodo_contable.estado_resultado = estado_resultados
 
         updated_periodo_contable: PeriodoContable | None = (
-            await self._periodo_contable_dao.update(
+            await self._periodo_contable_dao.update_by_id(
                 item_id=id_periodo,
                 data=periodo_contable,
             )
@@ -137,7 +137,7 @@ class EstadoResultadosManager:
         periodo_contable.estado_resultado = None
 
         updated_periodo_contable: PeriodoContable | None = (
-            await self._periodo_contable_dao.update(
+            await self._periodo_contable_dao.update_by_id(
                 item_id=id_periodo,
                 data=periodo_contable,
             )

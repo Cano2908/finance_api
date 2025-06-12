@@ -157,7 +157,7 @@ class BalanceGeneralManager:
 
         periodo_contable.balance_general = balance_general
 
-        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update(
+        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update_by_id(
             item_id=id_periodo,
             data=periodo_contable,
         )
@@ -194,7 +194,7 @@ class BalanceGeneralManager:
 
         periodo_contable.balance_general = balance_general
 
-        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update(
+        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update_by_id(
             item_id=id_periodo,
             data=periodo_contable,
         )
@@ -227,7 +227,7 @@ class BalanceGeneralManager:
 
         periodo_contable.balance_general = None
 
-        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update(
+        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update_by_id(
             item_id=id_periodo,
             data=periodo_contable,
         )
