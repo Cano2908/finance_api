@@ -28,10 +28,14 @@ class PeriodoContableManager:
     async def create_periodo_contable(
         self, id_empresa: ObjectId, periodo_contable: PeriodoContable
     ) -> PeriodoContable:
+        if periodo_contable.id_empresa != id_empresa:
+            raise NoPeriodoContableAvailableException(
+                f"El periodo contable debe pertenecer a la empresa con id: {id_empresa}"
+            )
+
         filters = {
             "id_empresa": id_empresa,
-            "fecha_inicio": periodo_contable.fecha_inicio,
-            "fecha_fin": periodo_contable.fecha_fin,
+            "anio": periodo_contable.anio,
         }
 
         find_periodo_contable: PeriodoContable | None = (
