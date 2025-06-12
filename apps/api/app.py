@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from apps.tools.env import env
+from fastapi.middleware.cors import CORSMiddleware
 
 API_PREFIX = env.API_PREFIX
 APP_NAME = env.APP_NAME
@@ -24,4 +25,12 @@ app = FastAPI(
     openapi_url=posixpath.join(API_PREFIX, "openapi.json"),
     version=VERSION,
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
