@@ -1,8 +1,7 @@
 import posixpath
 from http import HTTPStatus
-from typing import Annotated, Dict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, UploadFile
 
 from apps.api.config.exceptions.mongo_dao_exceptions import (
     BaseMongoDAOException,
@@ -13,10 +12,9 @@ from apps.api.config.exceptions.periodo_contable_exception import (
     PeriodoContableProblem,
 )
 from apps.api.config.problems.problem_exception import Problem
-from apps.api.dependencies.model_filters import get_model_filters
 from apps.api.dependencies.response_model import ResponseModel
 from apps.manager.estado_resultados_manager import EstadoResultadosManager
-from apps.mongo.models.periodo_contable import EstadoResultados
+from apps.mongo.models.extensions.estado_resultados import EstadoResultados
 from apps.tools.env import env
 from apps.tools.objectid import ObjectId
 
@@ -81,6 +79,39 @@ async def createate_estado_resultados(
         )
     except BasePeriodoContableException as e:
         raise Problem[PeriodoContableProblem](detail=str(e))
+    except BaseMongoDAOException as e:
+        raise Problem[MongoDAOProblem](detail=str(e))
+
+    return ResponseModel(
+        status=True,
+        detail="Estado resultados created successfully.",
+        data=created_estado_resultados,
+    )
+
+
+@estado_resultados_router.post(
+    path="/{id_periodo}/estado_resultados/file/",
+    status_code=HTTPStatus.CREATED,
+    response_model=ResponseModel[EstadoResultados, None],
+    operation_id="CreateEstadoResultadosByFile",
+)
+async def create_estado_resultados_by_file(id_periodo: ObjectId, file: UploadFile) -> ResponseModel[EstadoResultados, None]:
+    """
+    Create estado resultados by file.
+    Returns the estado resultados created.
+    """
+
+    try:
+        created_estado_resultados: EstadoResultados = (
+            await estado_resultados_manager.create_estado_resultados_by_file(
+                id_periodo=id_periodo,
+                file=file,
+            )
+        )
+    except BasePeriodoContableException as e:
+        raise Problem[PeriodoContableProblem](detail=str(e))
+    except BaseMongoDAOException as e:
+        raise Problem[MongoDAOProblem](detail=str(e))
 
     return ResponseModel(
         status=True,
@@ -113,6 +144,8 @@ async def update_estado_resultados(
         )
     except BasePeriodoContableException as e:
         raise Problem[PeriodoContableProblem](detail=str(e))
+    except BaseMongoDAOException as e:
+        raise Problem[MongoDAOProblem](detail=str(e))
 
     return ResponseModel(
         status=True,

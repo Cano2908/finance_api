@@ -1,10 +1,20 @@
+import io
+from typing import Set
+
+import pandas as pd
+from fastapi import UploadFile
+
 from apps.api.config.exceptions.mongo_dao_exceptions import MongoUpdateException
 from apps.api.config.exceptions.periodo_contable_exception import (
+    InvalidNameByFileException,
+    MissingColumnsByFileException,
+    MissingConceptsByFileException,
     NoBalanceGeneralAvailableException,
     NoPeriodoContableAvailableException,
 )
 from apps.mongo.daos.periodo_contable_dao import PeriodoContableDAO
-from apps.mongo.models.periodo_contable import BalanceGeneral, PeriodoContable
+from apps.mongo.models.extensions.balance_general import BalanceGeneral
+from apps.mongo.models.periodo_contable import PeriodoContable, parse_amount
 from apps.tools.objectid import ObjectId
 
 
@@ -134,6 +144,86 @@ class BalanceGeneralManager:
 
     #     return excel_file, f"analisis_vertical_{periodo_inicio}_{periodo_fin}.xlsx"
 
+    async def create_balance_general_by_file(
+        self,
+        id_periodo: ObjectId,
+        file: UploadFile,
+    ) -> BalanceGeneral:
+        periodo_contable: PeriodoContable | None = (
+            await self._periodo_contable_dao.get_by_id(item_id=id_periodo)
+        )
+
+        if periodo_contable is None:
+            raise NoPeriodoContableAvailableException(
+                f"No hay periodo contable con el id: {id_periodo}"
+            )
+
+        if periodo_contable.balance_general is not None:
+            raise NoBalanceGeneralAvailableException(
+                f"Ya existe un balance general para el periodo contable con el id: {id_periodo}"
+            )
+
+        contents = await file.read()
+        filename = file.filename
+
+        if not filename:
+            raise InvalidNameByFileException("El archivo no tiene un nombre válido.")
+
+        # Leer archivo
+        if filename.endswith(".xlsx"):
+            df: pd.DataFrame = pd.read_excel(io.BytesIO(contents))
+        else:
+            df: pd.DataFrame = pd.read_csv(io.StringIO(contents.decode("utf-8")))
+
+        # Validar columnas necesarias
+        required_columns: Set[str] = {"Concepto", "Cantidad"}
+        missing_columns: Set[str] = required_columns - set(df.columns)
+
+        if missing_columns:
+            raise MissingColumnsByFileException(
+                f"El archivo no contiene las columnas requeridas: {missing_columns}"
+            )
+
+        df["Concepto"] = df["Concepto"].str.strip()
+        df["Cantidad"] = df["Cantidad"].apply(parse_amount)
+
+        # Obtener campos válidos del modelo
+        modelo_campos: Set[str] = set(BalanceGeneral.model_fields.keys())
+
+        # Validar que todos los conceptos del modelo estén en el archivo
+        conceptos_archivo = set(df["Concepto"])
+        conceptos_faltantes: Set[str] = modelo_campos - conceptos_archivo
+        if conceptos_faltantes:
+            raise MissingConceptsByFileException(
+                f"Faltan los siguientes conceptos del modelo en el archivo: {conceptos_faltantes}"
+            )
+
+        # Construir dict con los datos
+        data_dict = {
+            row["Concepto"]: row["Cantidad"]
+            for _, row in df.iterrows()
+            if row["Concepto"] in modelo_campos
+        }
+
+        balance_general = BalanceGeneral(**data_dict)
+
+        # Guardar en el periodo contable
+        periodo_contable.balance_general = balance_general
+
+        updated_periodo_contable: PeriodoContable | None = (
+            await self._periodo_contable_dao.update_by_id(
+                item_id=id_periodo,
+                data=periodo_contable,
+            )
+        )
+
+        if updated_periodo_contable is None:
+            raise MongoUpdateException(
+                f"No se pudo crear el balance general para el periodo contable con el id: {id_periodo}"
+            )
+
+        return balance_general
+
     async def create_balance_general(
         self,
         id_periodo: ObjectId,
@@ -157,9 +247,11 @@ class BalanceGeneralManager:
 
         periodo_contable.balance_general = balance_general
 
-        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update_by_id(
-            item_id=id_periodo,
-            data=periodo_contable,
+        mongo_update: PeriodoContable | None = (
+            await self._periodo_contable_dao.update_by_id(
+                item_id=id_periodo,
+                data=periodo_contable,
+            )
         )
 
         if mongo_update is None:
@@ -194,9 +286,11 @@ class BalanceGeneralManager:
 
         periodo_contable.balance_general = balance_general
 
-        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update_by_id(
-            item_id=id_periodo,
-            data=periodo_contable,
+        mongo_update: PeriodoContable | None = (
+            await self._periodo_contable_dao.update_by_id(
+                item_id=id_periodo,
+                data=periodo_contable,
+            )
         )
 
         if mongo_update is None:
@@ -227,9 +321,11 @@ class BalanceGeneralManager:
 
         periodo_contable.balance_general = None
 
-        mongo_update: PeriodoContable | None = await self._periodo_contable_dao.update_by_id(
-            item_id=id_periodo,
-            data=periodo_contable,
+        mongo_update: PeriodoContable | None = (
+            await self._periodo_contable_dao.update_by_id(
+                item_id=id_periodo,
+                data=periodo_contable,
+            )
         )
 
         if mongo_update is None:

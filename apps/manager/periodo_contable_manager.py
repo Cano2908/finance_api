@@ -3,6 +3,7 @@ from apps.api.config.exceptions.periodo_contable_exception import (
     NoPeriodoContableAvailableException,
 )
 from apps.mongo.daos.periodo_contable_dao import PeriodoContableDAO
+
 from apps.mongo.models.periodo_contable import PeriodoContable
 from apps.tools.objectid import ObjectId
 

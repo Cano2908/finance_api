@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 API_PREFIX = env.API_PREFIX
 APP_NAME = env.APP_NAME
-VERSION = "0.3.1"
+VERSION = "1.0.0"
 
 
 @asynccontextmanager
