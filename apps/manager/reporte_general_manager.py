@@ -76,8 +76,8 @@ class ReporteGeneralManager:
         df_razones_rentabilidad = self._analisis_razones_rentabilidad(
             periodos_ordenados
         )
-        #df_tendencias = self._analisis_tendencias(periodos_ordenados)
-        df_dashboard = self._crear_dashboard_data(periodos_ordenados)
+        # df_tendencias = self._analisis_tendencias(periodos_ordenados)
+        # df_dashboard = self._crear_dashboard_data(periodos_ordenados)
         df_resumen_ejecutivo = self._crear_resumen_ejecutivo(periodos_ordenados)
 
         # Crear archivo Excel
@@ -90,8 +90,8 @@ class ReporteGeneralManager:
             df_razones_actividad,
             df_razones_endeudamiento,
             df_razones_rentabilidad,
-            #df_tendencias,
-            df_dashboard,
+            # df_tendencias,
+            # df_dashboard,
             df_resumen_ejecutivo,
         )
 
@@ -1034,8 +1034,8 @@ class ReporteGeneralManager:
         df_actividad,
         df_endeudamiento,
         df_rentabilidad,
-        #df_tendencias,
-        df_dashboard,
+        # df_tendencias,
+        # df_dashboard,
         df_resumen,
     ) -> BytesIO:
         """Crea archivo Excel con todas las hojas del análisis financiero"""
@@ -1050,10 +1050,10 @@ class ReporteGeneralManager:
                 )
 
             # Hoja de Dashboard
-            if not df_dashboard.empty:
-                df_dashboard.to_excel(
-                    writer, sheet_name="🎯 Dashboard KPIs", index=False
-                )
+            # if not df_dashboard.empty:
+            #     df_dashboard.to_excel(
+            #         writer, sheet_name="🎯 Dashboard KPIs", index=False
+            #     )
 
             # Escribir cada DataFrame en una hoja diferente
             if not df_vert_balance.empty:
